@@ -6,7 +6,7 @@ const User = dbmodel.model('User')
 const Friend = dbmodel.model('Friend')
 const Group = dbmodel.model('Group')
 const GroupMember = dbmodel.model('GroupMember')
-
+// 新建用户
 exports.newUser = (name, email, pwd, res) => {
 	let password = bcrypt.enbcrypt(pwd)
 	let data = {
@@ -37,7 +37,7 @@ exports.countUserValue = (data, type, res) => {
 		}
 	})
 }
-
+// 用户登录匹配
 exports.userMatch = (account, password, res) => {
 	let wherestr = {
 		$or: [{ name: account }, { email: account }],
@@ -51,32 +51,30 @@ exports.userMatch = (account, password, res) => {
 				if (result.length === 0) {
 					res.status(400).send()
 				}
-				try {
-					result.map(item => {
-						const passwordMatch = bcrypt.verification(password, item.password)
-						console.log('bcrypt.verification')
 
-						if (passwordMatch) {
-							setToken(item).then(token => {
-								const back = {
-									id: item._id,
-									name: item.name,
-									avatarUrl: item.avatarUrl,
-									gender: item.gender,
-									token: token,
-								}
-								console.log('passwordMatch', passwordMatch)
+				result.map(item => {
+					// 解密 并验证
+					const passwordMatch = bcrypt.verification(password, item.password)
+					console.log('bcrypt.verification', passwordMatch)
 
-								res.status(200).send(back)
-							})
-						} else {
-							console.log('error')
-							res.status(401).send()
-						}
-					})
-				} catch (err) {
-					console.log(err)
-				}
+					if (passwordMatch) {
+						setToken(item).then(token => {
+							const back = {
+								id: item._id,
+								name: item.name,
+								avatarUrl: item.avatarUrl,
+								gender: item.gender,
+								token: token,
+							}
+							console.log('passwordMatch', passwordMatch)
+
+							res.status(200).send(back)
+						})
+					} else {
+						console.log('error')
+						res.status(401).send()
+					}
+				})
 			}
 		})
 	} catch (error) {
@@ -130,9 +128,9 @@ exports.searchGroup = function (groupName, res) {
 exports.isGroupMember = function (uid, gid, res) {
 	GroupMember.findOne({ userId: uid, groupId: gid }, (err, result) => {
 		if (err) {
-			res.send({ status: 500 })
+			res.status(500)
 		} else {
-			res.send({ status: 200 })
+			res.status(200)
 		}
 	})
 }

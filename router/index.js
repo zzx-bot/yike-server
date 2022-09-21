@@ -16,6 +16,7 @@ module.exports = app => {
 	})
 
 	app.post('/signup/adduser', (req, res) => {
+		// console.log('/signup/adduser', req)
 		signUp(req, res)
 	})
 
