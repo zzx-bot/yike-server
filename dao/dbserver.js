@@ -116,10 +116,12 @@ exports.searchGroup = function (groupName, res) {
 	}
 	let Out = { groupName: 1, groupAvatar: 1 }
 	Group.find(wherestr, Out, (err, result) => {
+		console.log(result)
 		if (err) {
 			res.send({ status: 500 })
 		} else {
-			res.send({ status: 200, result })
+			console.log(result)
+			res.status(200).send(result)
 		}
 	})
 }
